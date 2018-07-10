@@ -2,6 +2,7 @@ package fpspeedrun
 import fpspeedrun.Iso.{Wrapper, WrapperCompanion}
 import simulacrum.typeclass
 import syntax.semigroup._
+import cats.syntax.option._
 
 @typeclass
 trait Monoid[A] extends Semigroup[A] with Default[A] {
@@ -12,7 +13,7 @@ trait Monoid[A] extends Semigroup[A] with Default[A] {
 object Monoid extends StdMonoidInstances[Monoid]{
   implicit def optionMonoid[T: Semigroup]: Monoid[Option[T]] =
     new Monoid[Option[T]] {
-      override def empty: Option[T] = None
+      override def empty: Option[T] = none
       override def combine(xo: Option[T], yo: Option[T]): Option[T] =
         for (x <- xo; y <- yo) yield x |+| y
     }

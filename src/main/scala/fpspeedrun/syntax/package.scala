@@ -1,5 +1,6 @@
 package fpspeedrun.syntax
 import fpspeedrun._
+import cats.syntax.option._
 
 object eq extends Eq.ToEqOps
 
@@ -31,8 +32,8 @@ object semigroup extends Semigroup.ToSemigroupOps {
 
     def reduceMapOpt[B](f: A => B)(implicit sg: Semigroup[B]): Option[B] =
       xs match {
-        case Nil => None
-        case x :: rest => Some(rest.foldLeft(f(x))((b, a) => b |+| f(a)))
+        case Nil => none
+        case x :: rest => rest.foldLeft(f(x))((b, a) => b |+| f(a)).some
       }
 
     def reduceOptVia[F[_]](implicit iso: Iso[A, F[A]], sg: Semigroup[F[A]]): Option[A] =
