@@ -75,5 +75,4 @@ object Hello extends App {
 
   // todo реализовать функцию foldLeft через foldRight
   // todo простой foldRight(без eval) который реализован через foldMap
-  // todo реализовать инстанс с Foldable для бинарного дерева из FreeMagma
 }

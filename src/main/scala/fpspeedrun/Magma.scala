@@ -1,4 +1,5 @@
 package fpspeedrun
+import cats.{Eval, Foldable}
 import simulacrum.typeclass
 
 import scala.annotation.tailrec
@@ -48,6 +49,25 @@ object BinTree {
         case xs => construct(xs)
       }
     construct((x +: y).map(Leaf(_)))
+  }
+
+  implicit val foldable: Foldable[BinTree] = new Foldable[BinTree] {
+    override def foldLeft[A, B](fa: BinTree[A], b: B)(f: (B, A) => B): B = {
+      def impl(toVisit: List[BinTree[A]], acc: B): B =
+        if (toVisit.isEmpty) acc
+        else toVisit.head match {
+          case Leaf(v) => impl(toVisit.tail, f(acc, v))
+          case Branch(l, r) => impl(l :: r :: toVisit.tail, acc)
+        }
+      impl(fa :: Nil, b)
+    }
+
+    override def foldRight[A, B](fa: BinTree[A], lb: Eval[B])(f: (A, Eval[B]) => Eval[B]): Eval[B] = {
+      fa match {
+        case Leaf(v) => f(v, lb)
+        case Branch(l, r) => Eval.defer(foldRight(r, lb)(f) flatMap { e => foldRight(l, Eval.now(e))(f) } )
+      }
+    }
   }
 }
 
